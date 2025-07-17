@@ -1,6 +1,5 @@
 (ns exoscale.ok-http.response
-  (:require [exoscale.ex :as ex]
-            [exoscale.ex.http :as ex-http])
+  (:require [exoscale.ex.http :as ex-http])
   (:import (okhttp3 Response)))
 
 (defn headers
