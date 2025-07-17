@@ -14,9 +14,7 @@ RING1 style api
 (def c (c/client {}))
 
 (c/request c {:method :get
-               :url "http://google.com/"
-               :query-params {:foo :bar}
-               :form-params {:foo :bar1}})
+              :url "http://google.com/"})
 ```
 
 
