@@ -4,7 +4,7 @@
             [clojure.tools.build.tasks.process :as p]
             [deps-deploy.deps-deploy :as dd]))
 
-(def lib 'exoscale/ok-http)
+(def lib 'com.exoscale/ok-http)
 (def version (format "1.0.%s" (b/git-count-revs nil)))
 (def class-dir "target/classes")
 (def copy-srcs ["src"])
