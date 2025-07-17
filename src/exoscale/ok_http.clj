@@ -13,10 +13,6 @@
 
 (defmulti set-client-option! (fn [^OkHttpClient$Builder _b k _v] k))
 
-(defmethod set-client-option! :follow-redirects
-  [^OkHttpClient$Builder b _ v]
-  (.followRedirects b v))
-
 (defmethod set-client-option! :tls
   [^OkHttpClient$Builder b _ tls]
   (set-client-option! b :ssl-socket-factory
@@ -46,6 +42,10 @@
 (defmethod set-client-option! :add-network-interceptor
   [^OkHttpClient$Builder b _ interceptor]
   (.addNetworkInterceptor b interceptor))
+
+(defmethod set-client-option! :follow-redirects
+  [^OkHttpClient$Builder b _ v]
+  (.followRedirects b v))
 
 (defmethod set-client-option! :follow-ssl-redirects
   [^OkHttpClient$Builder b _ v]
@@ -110,6 +110,24 @@
 (def client-options {})
 
 (defn client
+  "Creates new `client` from `opts` or creates a new `client` from a `client`,
+  copying it's settings and extra `opts`. Returned client can be used with
+  `request`.
+
+  Options:
+
+  * `:call-timeout` (in ms)
+  * `:read-timeout` (in ms)
+  * `:write-timeout` (in ms)
+  * `:connect-timeout` (in ms)
+  * `:protocols` - one of \"http/1.0\", \"http/1.1\", \"h2\", \"h2_prior_knowledge\", \"quic\", \"spdy/3.1\", \"h3\"
+  * `:dispatcher` : map of `:executor`, `:max-requests`, `:max-requests-per-host`
+  * `:retry-on-connection-failure`
+  * `:follow-redirects`
+  * `:ssl-socket-factory`
+  * `:follow-ssl-redirects`
+  * `:add-network-interceptors`
+  * `:add-interceptors`"
   ([^OkHttpClient client opts]
    (let [b ^OkHttpClient$Builder (.newBuilder client)]
      (-> b
@@ -124,6 +142,10 @@
 (def request-options {:throw-on-error true})
 
 (defn request
+  "Performs a http request via `client`, using `request-map` as payload.
+   Returns a ring response map.
+
+  Options: * `:throw-on-error`"
   [^OkHttpClient client request-map & {:as opts}]
   (let [opts (into request-options opts)]
     (-> client
