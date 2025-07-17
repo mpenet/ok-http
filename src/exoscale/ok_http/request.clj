@@ -74,8 +74,7 @@
 
 (defn build
   ^Request
-  [{:as _request :keys [method headers url body]}
-   & {:as _opts}]
+  [{:as _request :keys [method headers url body]}]
   (let [method (->method method)
         req (Request$Builder/new)
         headers' (->headers headers)

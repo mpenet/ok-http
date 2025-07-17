@@ -14,7 +14,7 @@
       persistent!))
 
 (defn body
-  [^Response response {:as opts :keys [response-body-decoder]}]
+  [^Response response {:as _opts :keys [response-body-decoder]}]
   (-> response .body .byteStream (cond-> (= :string response-body-decoder) slurp)))
 
 (def ok-status

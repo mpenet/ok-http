@@ -15,7 +15,7 @@
 (use-fixtures :once
   (fn [t]
     (binding [*client* (client/client *client-opts*)
-              request (fn [req & {:as opts}] (client/request *client* req opts))]
+              request (fn [req] (client/request *client* req))]
       (t))))
 
 (deftest test-simple-requests-roundrip
@@ -35,8 +35,8 @@
       "errors are mapped correctly for POST")
 
   (is (= 405 (:status (request {:method :post :url "http://google.com"
-                                :body ""}
-                               {:throw-on-error false})))
+                                :body ""
+                                :throw-on-error false})))
       "disabling the throw opts"))
 
 (deftest test-timeout
@@ -49,8 +49,8 @@
   (mocks/with-server 1234 (constantly {:status 200
                                        :body "Some value"})
     (let [{:keys [status body]} (request {:method :get
-                                          :url "http://localhost:1234"}
-                                         :response-body-decoder :string)]
+                                          :url "http://localhost:1234"
+                                          :response-body-decoder :string})]
       (is (= 200 status))
       (is (= "Some value" body)))))
 
@@ -59,8 +59,8 @@
     (let [{:keys [status body]}
           (request {:method :post
                     :url "http://localhost:1234"
-                    :body "abc"}
-                   :response-body-decoder :string)]
+                    :body "abc"
+                    :response-body-decoder :string})]
       (is (= 200 status))
       (is (= "abc" body)))))
 
@@ -106,8 +106,8 @@
                                        :body "Invalid"})
     (ex/try+
      (request {:method :get
-               :url "http://localhost:1234"}
-              :response-body-decoder :string)
+               :url "http://localhost:1234"
+               :response-body-decoder :string})
      (catch :exoscale.ex/incorrect {{:keys [status body]} :response}
        (is (= status 400))
        (is (= body "Invalid"))))))
@@ -116,9 +116,8 @@
   (binding [*client-opts* {:read-timeout 2}]
     (is (thrown? java.io.IOException
                  (request {:method :get
-                           :url large-file}
-                          :response-body-decoder :string
-                          :read-timeout 2))
+                           :url large-file
+                           :response-body-decoder :string}))
         "when we try to realize we will get the actual exception"))
   (binding [*client-opts* {:read-timeout 10}]
     (is (thrown? java.io.IOException

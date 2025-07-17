@@ -1,8 +1,7 @@
 (ns exoscale.ok-http
   (:require [exoscale.ex :as ex]
             [exoscale.ok-http.request :as request]
-            [exoscale.ok-http.response :as response]
-            [exoscale.ok-http.ssl :as ssl])
+            [exoscale.ok-http.response :as response])
   (:import (java.time Duration)
            (okhttp3 OkHttpClient
                     OkHttpClient$Builder
@@ -14,10 +13,10 @@
 (defmulti set-client-option! (fn [^OkHttpClient$Builder _b k _v] k))
 
 (defmethod set-client-option! :tls
-  [^OkHttpClient$Builder b _ tls]
-  (set-client-option! b :ssl-socket-factory
-                      [(ssl/ssl-socket-factory tls)
-                       (ssl/trust-manager tls)]))
+  [^OkHttpClient$Builder b _ [ssl-socket-factory trust-manager]]
+  (set-client-option! b
+                      :ssl-socket-factory
+                      [ssl-socket-factory trust-manager]))
 
 (defmethod set-client-option! :ssl-socket-factory
   [^OkHttpClient$Builder b _ [factory trust-manager]]
@@ -143,12 +142,10 @@
 
 (defn request
   "Performs a http request via `client`, using `request-map` as payload.
-   Returns a ring response map.
-
-  Options: * `:throw-on-error`"
-  [^OkHttpClient client request-map & {:as opts}]
-  (let [opts (into request-options opts)]
+   Returns a ring response map"
+  [^OkHttpClient client request-map]
+  (let [opts (into request-options request-map)]
     (-> client
-        (.newCall (request/build request-map opts))
+        (.newCall (request/build opts))
         (.execute)
         (response/build opts))))
