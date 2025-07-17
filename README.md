@@ -22,6 +22,7 @@ RING1 style api
 
 ## Documentation
 
+[API docs](API.md)
 
 ## Installation
 
