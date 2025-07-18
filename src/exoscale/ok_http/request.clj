@@ -106,7 +106,7 @@
         headers' (->headers headers)
         ct (.get headers' "content-type")
         http-url (cond-> (HttpUrl/parse url)
-                   query-params
+                   (seq query-params)
                    (add-query-parameters query-params))]
     (-> (doto req
           (.method method (to-body body (media-type ct)))
