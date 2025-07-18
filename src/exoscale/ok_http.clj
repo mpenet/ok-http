@@ -1,9 +1,7 @@
 (ns exoscale.ok-http
-  (:require [exoscale.ex :as ex]
-            [exoscale.ok-http.request :as request]
+  (:require [exoscale.ok-http.request :as request]
             [exoscale.ok-http.response :as response])
   (:import (java.time Duration)
-           (javax.net.ssl SSLContext SSLSocketFactory)
            (okhttp3 OkHttpClient
                     OkHttpClient$Builder
                     Dispatcher
