@@ -5,9 +5,9 @@
 (defn headers
   [^Response response]
   (-> (reduce-kv (fn [m k v]
-                   (cond-> m
-                     (and (sequential? v) (= 1 (count v)))
-                     (assoc! k v)))
+                   (if (= 1 (count v))
+                     (assoc! m k (first v))
+                     (assoc! m k v)))
                  (transient {})
                  (.toMultimap (.headers response)))
       persistent!))
