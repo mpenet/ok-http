@@ -76,7 +76,7 @@
 (defn add-query-parameters
   ^HttpUrl [^HttpUrl http-url query-params]
   (let [b (.newBuilder http-url)]
-    (run! (fn [k v]
+    (run! (fn [[k v]]
             (if (sequential? v)
               (run! #(.addQueryParameter b (name k) %) v)
               (.addQueryParameter b (name k) v)))
