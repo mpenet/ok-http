@@ -87,10 +87,8 @@
   (.callTimeout b (Duration/ofMillis v)))
 
 (defmethod set-client-option! :default
-  [^OkHttpClient$Builder _b k v]
-  (ex/ex-incorrect! "Unsupported client option"
-                    {:key k
-                     :value v}))
+  [^OkHttpClient$Builder b _k _v]
+  b)
 
 (defn set-client-options!
   ^OkHttpClient$Builder
