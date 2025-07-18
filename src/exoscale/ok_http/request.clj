@@ -73,13 +73,25 @@
        (MediaType/parse content-type)
        default-media-type))))
 
+(defn- param-val
+  [x]
+  (cond
+    (string? x) x
+    (ident? x) (name x)
+    :else (str x)))
+
 (defn add-query-parameters
   ^HttpUrl [^HttpUrl http-url query-params]
   (let [b (.newBuilder http-url)]
     (run! (fn [[k v]]
             (if (sequential? v)
-              (run! #(.addQueryParameter b (name k) %) v)
-              (.addQueryParameter b (name k) v)))
+              (run! #(.addQueryParameter b
+                                         (name k)
+                                         (param-val %))
+                    v)
+              (.addQueryParameter b
+                                  (name k)
+                                  (param-val v))))
           query-params)
     (.build b)))
 
