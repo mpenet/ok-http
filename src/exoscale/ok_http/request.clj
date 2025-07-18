@@ -85,10 +85,11 @@
   (let [b (.newBuilder http-url)]
     (run! (fn [[k v]]
             (if (sequential? v)
-              (run! #(.addQueryParameter b
-                                         (name k)
-                                         (param-val %))
-                    v)
+              (let [k (name k)]
+                (run! #(.addQueryParameter b
+                                           k
+                                           (param-val %))
+                      v))
               (.addQueryParameter b
                                   (name k)
                                   (param-val v))))
