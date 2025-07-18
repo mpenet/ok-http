@@ -107,7 +107,11 @@
         ct (.get headers' "content-type")
         http-url (cond-> (HttpUrl/parse url)
                    (seq query-params)
-                   (add-query-parameters query-params))]
+                   (add-query-parameters query-params))
+        body (if (and (nil? body)
+                      (= :post method))
+               ""
+               body)]
     (-> (doto req
           (.method method (to-body body (media-type ct)))
           (.headers (->headers headers))
