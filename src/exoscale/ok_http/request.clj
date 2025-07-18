@@ -101,7 +101,7 @@
   [{:as _request
     :keys [method headers url body query-params]
     :or {method :get}}]
-  (let [method (->method method)
+  (let [method' (->method method)
         req (Request$Builder/new)
         headers' (->headers headers)
         ct (.get headers' "content-type")
@@ -113,7 +113,7 @@
                ""
                body)]
     (-> (doto req
-          (.method method (to-body body (media-type ct)))
+          (.method method' (to-body body (media-type ct)))
           (.headers (->headers headers))
           (.url http-url))
         .build)))
