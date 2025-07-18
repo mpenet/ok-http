@@ -132,9 +132,3 @@
       (is (seq (slurp (:body (request {:method :get
                                        :url "http://localhost:1234"}))))
           "we got content before timeout"))))
-
-;; (deftest params-test
-;;   (is (= "a=1&b=2" (ix/encode-query-params {:a 1 :b 2})))
-;;   (is (= "a=1" (ix/encode-query-params {:a 1})))
-;;   (is (= "a=1&b=2&b=3&b=4&c=5" (ix/encode-query-params {:a 1 :b [2 3 4] :c 5})))
-;;   (is (= nil (ix/encode-query-params nil))))
