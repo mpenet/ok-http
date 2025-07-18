@@ -3,6 +3,7 @@
             [exoscale.ok-http.request :as request]
             [exoscale.ok-http.response :as response])
   (:import (java.time Duration)
+           (javax.net.ssl SSLContext SSLSocketFactory)
            (okhttp3 OkHttpClient
                     OkHttpClient$Builder
                     Dispatcher
@@ -12,15 +13,15 @@
 
 (defmulti set-client-option! (fn [^OkHttpClient$Builder _b k _v] k))
 
-(defmethod set-client-option! :tls
-  [^OkHttpClient$Builder b _ [ssl-socket-factory trust-manager]]
+(defmethod set-client-option! :ssl-context
+  [^OkHttpClient$Builder b _ ^SSLContext ssl-context]
   (set-client-option! b
                       :ssl-socket-factory
-                      [ssl-socket-factory trust-manager]))
+                      (.getSocketFactory ssl-context)))
 
 (defmethod set-client-option! :ssl-socket-factory
-  [^OkHttpClient$Builder b _ [factory trust-manager]]
-  (.sslSocketFactory b factory trust-manager))
+  [^OkHttpClient$Builder b _ factory]
+  (.sslSocketFactory b factory))
 
 (defmethod set-client-option! :add-interceptors
   [^OkHttpClient$Builder b _ interceptors]
