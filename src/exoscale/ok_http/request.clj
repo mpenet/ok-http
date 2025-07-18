@@ -86,9 +86,9 @@
 (defn build
   ^Request
   [{:as _request
-    :keys [request-method headers url body query-params]
-    :or {request-method :get}}]
-  (let [method (->method request-method)
+    :keys [method headers url body query-params]
+    :or {method :get}}]
+  (let [method (->method method)
         req (Request$Builder/new)
         headers' (->headers headers)
         ct (.get headers' "content-type")
