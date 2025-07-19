@@ -4,7 +4,12 @@
             exoscale.ex.test
             [exoscale.ok-http :as client]
             [exoscale.ok-http.mocks :as mocks])
-  (:import (java.net SocketTimeoutException)))
+  (:import
+   (java.net SocketTimeoutException)
+   (java.util.logging Logger Level)
+   (okhttp3 OkHttpClient)))
+
+(.setLevel (Logger/getLogger (.getName OkHttpClient)) Level/FINE)
 
 (def large-file "https://ash-speed.hetzner.com/1GB.bin")
 
