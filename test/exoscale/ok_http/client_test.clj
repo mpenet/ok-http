@@ -25,6 +25,14 @@
 
   (is (= 200 (:status (request {:method :get :url "http://google.com"}))))
 
+  (is (= 200 (:status (request {:method :get :url "http://google.com"
+                                :headers
+                                {:foo "bar"
+                                 "bar" 1
+                                 "bars" [1 2 ""]}}))))
+
+  (is (= 200 (:status (request {:method :get :url "http://google.com" :body "test"}))))
+
   (is (thrown-ex-info-type? :exoscale.ex/not-found
                             (request {:method :get :url "http://google.com/404"}))
       "errors are mapped correctly for GET")
@@ -62,24 +70,38 @@
                     :body "abc"
                     :response-body-decoder :string})]
       (is (= 200 status))
-      (is (= "abc" body)))))
+      (is (= "abc" body)))
 
-#_(deftest test-post-form-params
-    (mocks/with-server 1234 (fn [{:keys [body]}] {:status 200 :body body})
-      (let [{:keys [status body]}
-            (request {:method :post
-                      :url "http://localhost:1234"}
-                     :response-body-decoder :string)]
-        (is (= 200 status))
-        (is (= "a=1" body)))
+    (let [{:keys [status body]}
+          (request {:method :post
+                    :url "http://localhost:1234"
+                    :response-body-decoder :string})]
+      (is (= 200 status))
+      (is (= "" body)))
 
-      (let [{:keys [status body]}
-            (request {:method :post
-                      :url "http://localhost:1234"
-                      :exoscale.ok-http.response/body-handler :string
-                      :form-params {}})]
-        (is (= 200 status))
-        (is (= "" body)))))
+    (let [{:keys [status body]}
+          (request {:method :post
+                    :url "http://localhost:1234"
+                    :response-body-decoder :byte-stream})]
+      (is (= 200 status))
+      (is (= "" (slurp body))))))
+
+;; #_(deftest test-post-form-params
+;;     (mocks/with-server 1234 (fn [{:keys [body]}] {:status 200 :body body})
+;;       (let [{:keys [status body]}
+;;             (request {:method :post
+;;                       :url "http://localhost:1234"}
+;;                      :response-body-decoder :string)]
+;;         (is (= 200 status))
+;;         (is (= "a=1" body)))
+
+;;       (let [{:keys [status body]}
+;;             (request {:method :post
+;;                       :url "http://localhost:1234"
+;;                       :exoscale.ok-http.response/body-handler :string
+;;                       :form-params {}})]
+;;         (is (= 200 status))
+;;         (is (= "" body)))))
 
 #_(deftest test-post-form-params+body
     (mocks/with-server 1234 (fn [{:keys [body]}] {:status 200 :body body})
@@ -105,12 +127,12 @@
   (mocks/with-server 1234 (constantly {:status 400
                                        :body "Invalid"})
     (ex/try+
-     (request {:method :get
-               :url "http://localhost:1234"
-               :response-body-decoder :string})
-     (catch :exoscale.ex/incorrect {{:keys [status body]} :response}
-       (is (= status 400))
-       (is (= body "Invalid"))))))
+      (request {:method :get
+                :url "http://localhost:1234"
+                :response-body-decoder :string})
+      (catch :exoscale.ex/incorrect {{:keys [status body]} :response}
+        (is (= status 400))
+        (is (= body "Invalid"))))))
 
 (deftest test-response-body-read-timeout
   (binding [*client-opts* {:read-timeout 2}]

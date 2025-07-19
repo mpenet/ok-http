@@ -129,7 +129,9 @@
              (set-client-options! (into client-options opts)))]
      (.build b))))
 
-(def request-options {:throw-on-error true})
+(def request-options
+  {:throw-on-error true
+   :response-body-decoder :byte-stream})
 
 (defn request
   "Performs a http request via `client`, using `request-map` as payload.

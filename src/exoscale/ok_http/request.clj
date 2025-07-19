@@ -1,10 +1,10 @@
 (ns exoscale.ok-http.request
-  (:require [clojure.string :as str])
+  (:require [clojure.string :as str]
+            [exoscale.ok-http.headers :as h])
   (:import (java.io File InputStream)
            (okhttp3 Request$Builder
                     Headers
                     HttpUrl
-                    HttpUrl$Builder
                     Request
                     Headers$Builder
                     RequestBody
@@ -22,6 +22,10 @@
   byte/1
   (to-body [^bytes/1 body ^MediaType media-type]
     (RequestBody/create media-type body))
+
+  RequestBody
+  (to-body [^RequestBody b ^MediaType _media-type]
+    b)
 
   java.io.InputStream
   (to-body [^InputStream body ^MediaType media-type]
@@ -44,16 +48,6 @@
   (to-body [_body ^MediaType _media-type]
     nil))
 
-(defn ->headers
-  ^Headers [headers]
-  (let [b (Headers$Builder/new)]
-    (run! (fn [[k v]]
-            (.add b
-                  (name k)
-                  (name v)))
-          headers)
-    (.build b)))
-
 (defn ->method
   [method]
   (case method
@@ -65,6 +59,14 @@
     :patch "PATCH"
     :options "OPTIONS"
     (-> method name str/upper-case)))
+
+(defn body-for-method
+  [method body]
+  (case method
+    (:post :put :patch :proppatch :report)
+    (or body (RequestBody/create (byte-array 0) nil))
+    (:head :get) nil
+    body))
 
 (def media-type
   (memoize
@@ -103,17 +105,14 @@
     :or {method :get}}]
   (let [method' (->method method)
         req (Request$Builder/new)
-        headers' (->headers headers)
-        ct (.get headers' "content-type")
+        headers (h/map->headers headers)
+        ct (.get headers "content-type")
         http-url (cond-> (HttpUrl/parse url)
                    (seq query-params)
                    (add-query-parameters query-params))
-        body (if (and (nil? body)
-                      (= :post method))
-               ""
-               body)]
+        body (body-for-method method body)]
     (-> (doto req
           (.method method' (to-body body (media-type ct)))
-          (.headers (->headers headers))
+          (.headers headers)
           (.url http-url))
         .build)))
