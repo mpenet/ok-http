@@ -135,7 +135,14 @@
 
 (defn request
   "Performs a http request via `client`, using `request-map` as payload.
-   Returns a ring response map"
+   Returns a ring response map
+
+  Options:
+  * `:throw-on-error` - defaults to true
+
+  * `:response-body-decoder` - `:byte-stream` (default, ensure it's consumed!),
+  `:string`, `:bytes`, `:input-stream` (safe, eager, copy)"
+
   [^OkHttpClient client request-map]
   (let [opts (into request-options request-map)]
     (-> client
