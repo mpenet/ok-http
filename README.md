@@ -28,8 +28,10 @@ ok-http is [available on Clojars](https://clojars.org/com.exoscale/ok-http).
 
 Add this to your dependencies:
 
-[![Clojars Project](https://img.shields.io/clojars/v/exoscale/ok-http.svg)](https://clojars.org/exoscale/ok-http)
+[![Clojars Project](https://img.shields.io/clojars/v/com.exoscale/ok-http.svg?include_prereleases)](https://clojars.org/com.exoscale/ok-http)
 
 ## License
 
-Copyright © 2020 [Exoscale](https://exoscale.com)
+Copyright © 2025 [Exoscale](https://exoscale.com)
+
+Distributed under the Eclipse Public License version 1.0.
