@@ -1,12 +1,11 @@
 (ns exoscale.ok-http.request
   (:require [clojure.string :as str]
-            [exoscale.ok-http.headers :as h])
+            [exoscale.ok-http.headers :as h]
+            [exoscale.ok-http.util :as u])
   (:import (java.io File InputStream)
            (okhttp3 Request$Builder
-                    Headers
                     HttpUrl
                     Request
-                    Headers$Builder
                     RequestBody
                     MediaType)
            (okio ByteString Okio)))
@@ -48,7 +47,7 @@
   (to-body [_body ^MediaType _media-type]
     nil))
 
-(defn ->method
+(defn request-method
   [method]
   (case method
     :get "GET"
@@ -75,26 +74,20 @@
        (MediaType/parse content-type)
        default-media-type))))
 
-(defn- param-val
-  [x]
-  (cond
-    (string? x) x
-    (ident? x) (name x)
-    :else (str x)))
-
 (defn add-query-parameters
   ^HttpUrl [^HttpUrl http-url query-params]
   (let [b (.newBuilder http-url)]
     (run! (fn [[k v]]
-            (if (sequential? v)
-              (let [k (name k)]
+            (let [k (u/any->str k)]
+              (if (sequential? v)
                 (run! #(.addQueryParameter b
                                            k
-                                           (param-val %))
-                      v))
-              (.addQueryParameter b
-                                  (name k)
-                                  (param-val v))))
+                                           (u/any->str %))
+                      v)
+                (.addQueryParameter b
+                                    k
+                                    (u/any->str v)))))
+
           query-params)
     (.build b)))
 
@@ -103,7 +96,7 @@
   [{:as _request
     :keys [method headers url body query-params]
     :or {method :get}}]
-  (let [method' (->method method)
+  (let [method' (request-method method)
         req (Request$Builder/new)
         headers (h/map->headers headers)
         ct (.get headers "content-type")

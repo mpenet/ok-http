@@ -1,22 +1,16 @@
 (ns exoscale.ok-http.headers
+  (:require [exoscale.ok-http.util :as u])
   (:import (okhttp3 Headers
                     Headers$Builder
                     Response)))
-
-(defn- header-val
-  ^String [x]
-  (cond
-    (string? x) x
-    (ident? x) (name x)
-    :else (str x)))
 
 (defn map->headers
   ^Headers [headers]
   (let [b (Headers$Builder/new)]
     (run! (fn [[k v]]
             (.add b
-                  (header-val k)
-                  (header-val v)))
+                  (u/any->str k)
+                  (u/any->str v)))
           headers)
     (.build b)))
 
