@@ -4,8 +4,6 @@
     -  [`client-options`](#exoscale.ok-http/client-options)
     -  [`request`](#exoscale.ok-http/request) - Performs a http request via <code>client</code>, using <code>request-map</code> as payload.
     -  [`request-options`](#exoscale.ok-http/request-options)
-    -  [`set-client-option!`](#exoscale.ok-http/set-client-option!)
-    -  [`set-client-options!`](#exoscale.ok-http/set-client-options!)
 
 -----
 # <a name="exoscale.ok-http">exoscale.ok-http</a>
@@ -34,19 +32,20 @@ Creates new [[[`client`](#exoscale.ok-http/client)](#exoscale.ok-http/client)](#
   * `:connect-timeout` (in ms)
   * `:protocols` - one of "http/1.0", "http/1.1", "h2", "h2_prior_knowledge", "quic", "spdy/3.1", "h3"
   * `:dispatcher` : map of `:executor`, `:max-requests`, `:max-requests-per-host`
+  * `:connection-pool` : map of `:max-idle-connections`, `:keepalive-duration` (in ms)
   * `:retry-on-connection-failure`
   * `:follow-redirects`
   * `:ssl-socket-factory`
   * `:follow-ssl-redirects`
   * `:add-network-interceptors`
   * `:add-interceptors`
-<p><sub><a href="https://github.com/exoscale/ok-http/blob/main/src/exoscale/ok_http.clj#L102-L130">Source</a></sub></p>
+<p><sub><a href="https://github.com/exoscale/ok-http/blob/main/src/exoscale/ok_http.clj#L13-L42">Source</a></sub></p>
 
 ## <a name="exoscale.ok-http/client-options">`client-options`</a><a name="exoscale.ok-http/client-options"></a>
 
 
 
-<p><sub><a href="https://github.com/exoscale/ok-http/blob/main/src/exoscale/ok_http.clj#L100-L100">Source</a></sub></p>
+<p><sub><a href="https://github.com/exoscale/ok-http/blob/main/src/exoscale/ok_http.clj#L11-L11">Source</a></sub></p>
 
 ## <a name="exoscale.ok-http/request">`request`</a><a name="exoscale.ok-http/request"></a>
 ``` clojure
@@ -62,23 +61,10 @@ Performs a http request via [`client`](#exoscale.ok-http/client), using `request
 
   * `:response-body-decoder` - `:byte-stream` (default, ensure it's consumed!),
   `:string`, `:bytes`, `:input-stream` (safe, eager, copy)
-<p><sub><a href="https://github.com/exoscale/ok-http/blob/main/src/exoscale/ok_http.clj#L136-L151">Source</a></sub></p>
+<p><sub><a href="https://github.com/exoscale/ok-http/blob/main/src/exoscale/ok_http.clj#L48-L63">Source</a></sub></p>
 
 ## <a name="exoscale.ok-http/request-options">`request-options`</a><a name="exoscale.ok-http/request-options"></a>
 
 
 
-<p><sub><a href="https://github.com/exoscale/ok-http/blob/main/src/exoscale/ok_http.clj#L132-L134">Source</a></sub></p>
-
-## <a name="exoscale.ok-http/set-client-option!">`set-client-option!`</a><a name="exoscale.ok-http/set-client-option!"></a>
-
-
-
-<p><sub><a href="https://github.com/exoscale/ok-http/blob/main/src/exoscale/ok_http.clj#L12-L12">Source</a></sub></p>
-
-## <a name="exoscale.ok-http/set-client-options!">`set-client-options!`</a><a name="exoscale.ok-http/set-client-options!"></a>
-``` clojure
-
-(set-client-options! builder opts)
-```
-<p><sub><a href="https://github.com/exoscale/ok-http/blob/main/src/exoscale/ok_http.clj#L91-L98">Source</a></sub></p>
+<p><sub><a href="https://github.com/exoscale/ok-http/blob/main/src/exoscale/ok_http.clj#L44-L46">Source</a></sub></p>
