@@ -1,5 +1,6 @@
 (ns s-exp.ok-http
-  (:require [s-exp.ok-http.options :as options]
+  (:require [clojure.string :as str]
+            [s-exp.ok-http.options :as options]
             [s-exp.ok-http.request :as request]
             [s-exp.ok-http.response :as response])
   (:import
@@ -41,6 +42,8 @@
              (options/set-options! (into client-options opts)))]
      (.build b))))
 
+(defonce default-client (delay (client {})))
+
 (def request-options
   {:throw-on-error true
    :response-body-decoder :byte-stream})
@@ -55,9 +58,29 @@
   * `:response-body-decoder` - `:byte-stream` (default, ensure it's consumed!),
   `:string`, `:bytes`, `:input-stream` (safe, eager, copy)"
 
-  [^OkHttpClient client request-map]
-  (let [opts (into request-options request-map)]
-    (-> client
-        (.newCall (request/build opts))
-        (.execute)
-        (response/build opts))))
+  ([request-map]
+   (request @default-client request-map))
+  ([^OkHttpClient client request-map]
+   (let [opts (into request-options request-map)]
+     (-> client
+         (.newCall (request/build opts))
+         (.execute)
+         (response/build opts)))))
+
+(defmacro defmethod [method]
+  (let [client (vary-meta 'client assoc :tag okhttp3.OkHttpClient)]
+    `(defn ~(symbol method)
+       ~(format "Performs a %s http request via `client`, using `request-map` as payload.
+   Returns a ring response map
+
+  Options:
+  * `:throw-on-error` - defaults to true
+
+  * `:response-body-decoder` - `:byte-stream` (default, ensure it's consumed!),
+  `:string`, `:bytes`, `:input-stream` (safe, eager, copy)" (str/upper-case (name method)))
+       ([~'request-map] (request @default-client (assoc ~'request-map :method ~method)))
+       ([~client ~'request-map]
+        (request ~client (assoc ~'request-map :method ~method))))))
+
+(doseq [method [:get :post :put :delete :head]]
+  (defmethod method))

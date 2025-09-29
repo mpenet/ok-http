@@ -52,6 +52,28 @@
                                 :throw-on-error false})))
       "disabling the throw opts"))
 
+(deftest test-get-body
+  (mocks/with-server 1234 (constantly {:status 200
+                                       :body "Some value"})
+    (let [{:keys [status body]}
+          (request {:method :get
+                    :url "http://localhost:1234"
+                    :body nil
+                    :response-body-decoder :string})]
+      (is (= 200 status))
+      (is (= "Some value" body))))
+
+  (mocks/with-server 1234 (fn [_]
+                            {:status 200
+                             :body "Some value"})
+    (let [{:keys [status body]}
+          (request {:method :get
+                    :url "http://localhost:1234"
+                    :body "asdf"
+                    :response-body-decoder :string})]
+      (is (= 200 status))
+      (is (= "Some value" body)))))
+
 (deftest test-timeout
   (binding [*client-opts* {:read-timeout 1}]
     (is (thrown? SocketTimeoutException
