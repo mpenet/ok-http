@@ -67,7 +67,7 @@
          (.execute)
          (response/build opts)))))
 
-(defmacro defmethod [method]
+(defmacro def-http-method [method]
   (let [client (vary-meta 'client assoc :tag okhttp3.OkHttpClient)]
     `(defn ~(symbol method)
        ~(format "Performs a %s http request via `client`, using `request-map` as payload.
@@ -83,4 +83,4 @@
         (request ~client (assoc ~'request-map :method ~method))))))
 
 (doseq [method [:get :post :put :delete :head]]
-  (defmethod method))
+  (def-http-method method))
