@@ -3,6 +3,7 @@
             [s-exp.ok-http.options :as options]
             [s-exp.ok-http.request :as request]
             [s-exp.ok-http.response :as response])
+  (:refer-clojure :exclude [get])
   (:import
    (okhttp3 OkHttpClient
             OkHttpClient$Builder)))
@@ -77,10 +78,18 @@
   * `:throw-on-error` - defaults to true
 
   * `:response-body-decoder` - `:byte-stream` (default, ensure it's consumed!),
-  `:string`, `:bytes`, `:input-stream` (safe, eager, copy)" (str/upper-case (name method)))
+  `:string`, `:bytes`, `:input-stream` (safe, eager, copy)"
+                (str/upper-case (name method)))
        ([~'request-map] (request @default-client (assoc ~'request-map :method ~method)))
        ([~client ~'request-map]
         (request ~client (assoc ~'request-map :method ~method))))))
 
-(doseq [method [:get :post :put :delete :head]]
-  (def-http-method method))
+(def-http-method :get)
+(def-http-method :post)
+(def-http-method :put)
+(def-http-method :patch)
+(def-http-method :options)
+(def-http-method :trace)
+(def-http-method :head)
+(def-http-method :delete)
+(def-http-method :connect)

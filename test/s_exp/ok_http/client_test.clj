@@ -61,6 +61,14 @@
                     :body nil
                     :response-body-decoder :string})]
       (is (= 200 status))
+      (is (= "Some value" body)))
+
+    (let [{:keys [status body]}
+          (client/get *client*
+                      {:url "http://localhost:1234"
+                       :body nil
+                       :response-body-decoder :string})]
+      (is (= 200 status))
       (is (= "Some value" body))))
 
   (mocks/with-server 1234 (fn [_]
