@@ -28,12 +28,8 @@
                 :pom-data
                 [[:licenses
                   [:license
-                   [:name "MIT"]
-                   [:url "https://opensource.org/license/mit/"]
-                   [:distribution "repo"]]
-                  [:license
-                   [:name "ISC"]
-                   [:url "https://opensource.org/license/isc-license-txt/"]
+                   [:name "EPL 1.0"]
+                   [:url "https://www.eclipse.org/legal/epl/epl-v10.html"]
                    [:distribution "repo"]]]]})
   (b/copy-dir {:src-dirs copy-srcs
                :target-dir class-dir})
