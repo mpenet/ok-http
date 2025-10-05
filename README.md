@@ -7,14 +7,68 @@ Very minimal http client based on ok-http
 
 RING1 style api
 
-``` clj
-(require '[s-exp.ok-http :as c])
+```clj
+(require '[s-exp.ok-http :as http])
 
-;; creates a new client instance
-(def c (c/client {}))
+;; create a new client instance
+(def client (http/client {}))
 
-(c/request c {:method :get
-              :url "http://google.com/"})
+(http/request client {:method :get
+                      :url "https://httpbin.org/get"})
+```
+
+## Examples
+
+### 1. Simple GET request
+```clojure
+(http/request {:method :get
+               :url "https://httpbin.org/get"})
+```
+
+### 2. Using a custom client
+```clojure
+(def my-client (http/client {:read-timeout 1000}))
+(http/request my-client {:method :get :url "https://httpbin.org/get"})
+```
+
+### 3. POST with JSON body & headers
+```clojure
+(http/request {:method :post
+               :url "https://httpbin.org/post"
+               :headers {"Content-Type" "application/json"}
+               :body "{\"foo\": \"bar\"}"})
+```
+
+### 4. Add query parameters
+```clojure
+(http/request {:method :get
+               :url "https://httpbin.org/get"
+               :query-params {:foo "bar" :baz [1 2]}})
+```
+
+### 5. Response body decoder
+```clojure
+;; default (:byte-stream) returns InputStream (MUST consume fully)
+(def resp (http/request {:url "https://httpbin.org/get"}))
+(slurp (:body resp))
+
+;; To force eager string decoding:
+(def resp (http/request {:url "https://httpbin.org/get"
+                         :response-body-decoder :string}))
+(:body resp) ;=> ...contents as string
+```
+
+### 6. Error handling
+```clojure
+;; throw on 4xx/5xx by default:
+(try
+  (http/request {:url "https://httpbin.org/status/404"})
+  (catch Exception e
+    (println "Error:" (.getMessage e))))
+
+;; to return the response (even if error status):
+(http/request {:url "https://httpbin.org/status/404"
+               :throw-on-error false})
 ```
 
 ## Documentation

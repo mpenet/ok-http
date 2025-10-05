@@ -50,15 +50,31 @@
    :response-body-decoder :byte-stream})
 
 (defn request
-  "Performs a http request via `client`, using `request-map` as payload.
-   Returns a ring response map
+  "Performs an HTTP request using the provided OkHttp client and a request map.
+  Returns a Ring-style response map containing keys such as :status, :headers, :body.
+
+  Arguments:
+  * `client` (okhttp3.OkHttpClient): Optional, if not provided the default client is used.
+  * `request-map` (map): Map describing request parameters.
+
+  Supported keys in `request-map`:
+  * `:method` - HTTP method keyword (:get, :post, etc), defaults to :get
+  * `:url` - Absolute URL string (required)
+  * `:headers` - Map of header names to values
+  * `:body` - Request body (string, bytes, stream, file, etc.)
+  * `:query-params` - Map of query parameters to add to URL
 
   Options:
-  * `:throw-on-error` - defaults to true
+  * `:throw-on-error` - If true (default), throws exception on 4xx/5xx. If false, returns response.
+  * `:response-body-decoder` - Decoding strategy for :body: `:byte-stream` (default, lazy raw bytes, must be consumed), `:string`, `:bytes`, `:input-stream` (eager, safe to read/copy).
 
-  * `:response-body-decoder` - `:byte-stream` (default, ensure it's consumed!),
-  `:string`, `:bytes`, `:input-stream` (safe, eager, copy)"
+  Returns:
+  * Ring response map: {:status int, :headers map, :body value}
 
+  Example:
+    (request {:method :get :url "https://httpbin.org/get"})
+    (request client {:method :post :url "https://api.com" :headers {"Content-Type" "application/json"} :body "{...}"})
+  "
   ([request-map]
    (request @default-client request-map))
   ([^OkHttpClient client request-map]
