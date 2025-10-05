@@ -4,7 +4,7 @@
     -  [`client-options`](#s-exp.ok-http/client-options)
     -  [`def-http-method`](#s-exp.ok-http/def-http-method)
     -  [`default-client`](#s-exp.ok-http/default-client)
-    -  [`request`](#s-exp.ok-http/request) - Performs a http request via <code>client</code>, using <code>request-map</code> as payload.
+    -  [`request`](#s-exp.ok-http/request) - Performs an HTTP request using the provided OkHttp client and a request map.
     -  [`request-options`](#s-exp.ok-http/request-options)
 
 -----
@@ -55,7 +55,7 @@ Creates new [[[`client`](#s-exp.ok-http/client)](#s-exp.ok-http/client)](#s-exp.
 (def-http-method method)
 ```
 Function.
-<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L71-L85">Source</a></sub></p>
+<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L87-L101">Source</a></sub></p>
 
 ## <a name="s-exp.ok-http/default-client">`default-client`</a><a name="s-exp.ok-http/default-client"></a>
 
@@ -70,15 +70,30 @@ Function.
 (request client request-map)
 ```
 
-Performs a http request via [`client`](#s-exp.ok-http/client), using `request-map` as payload.
-   Returns a ring response map
+Performs an HTTP request using the provided OkHttp client and a request map.
+  Returns a Ring-style response map containing keys such as :status, :headers, :body.
+
+  Arguments:
+  * [`client`](#s-exp.ok-http/client) (okhttp3.OkHttpClient): Optional, if not provided the default client is used.
+  * `request-map` (map): Map describing request parameters.
+
+  Supported keys in `request-map`:
+  * `:method` - HTTP method keyword (:get, :post, etc), defaults to :get
+  * `:url` - Absolute URL string (required)
+  * `:headers` - Map of header names to values
+  * `:body` - Request body (string, bytes, stream, file, etc.)
+  * `:query-params` - Map of query parameters to add to URL
 
   Options:
-  * `:throw-on-error` - defaults to true
+  * `:throw-on-error` - If true (default), throws exception on 4xx/5xx. If false, returns response.
+  * `:response-body-decoder` - Decoding strategy for :body: `:byte-stream` (default, lazy raw bytes, must be consumed), `:string`, `:bytes`, `:input-stream` (eager, safe to read/copy).
 
-  * `:response-body-decoder` - `:byte-stream` (default, ensure it's consumed!),
-  `:string`, `:bytes`, `:input-stream` (safe, eager, copy)
-<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L52-L69">Source</a></sub></p>
+  Returns:
+  * Ring response map: {:status int, :headers map, :body value}
+
+  Example:
+    (request {:method :get :url 
+<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L52-L85">Source</a></sub></p>
 
 ## <a name="s-exp.ok-http/request-options">`request-options`</a><a name="s-exp.ok-http/request-options"></a>
 
