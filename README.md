@@ -17,7 +17,6 @@ RING1 style api
               :url "http://google.com/"})
 ```
 
-
 ## Documentation
 
 [API docs](API.md)

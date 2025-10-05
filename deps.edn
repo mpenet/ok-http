@@ -6,7 +6,7 @@
 
  :aliases
  {:test
-  {:extra-deps {s-exp/test-runner {:local/root "dev"}
+  {:extra-deps {com.s-exp.ok-http/test-runner {:local/root "dev"}
                 ring/ring-jetty-adapter {:mvn/version "1.7.1"}}
    :exec-fn test-runner/run
    :jvm-opts ["-Dclojure.main.report=stderr"]
@@ -24,7 +24,7 @@
           {:deps/root "jvm"
            :git/sha "7c8bef54eda28367193ec433af01bb940114f012"}}
    :exec-fn quickdoc.api/quickdoc
-   :exec-args {:github/repo "https://github.com/s-exp/ok-http"
+   :exec-args {:github/repo "https://github.com/mpenet/ok-http"
                :git/branch "main"
-               :source-paths ["src/s-exp/ok_http.clj"]
+               :source-paths ["src/s_exp/ok_http.clj"]
                :var-links true}}}}
