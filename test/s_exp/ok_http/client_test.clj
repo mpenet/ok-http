@@ -189,3 +189,6 @@
       (is (seq (slurp (:body (request {:method :get
                                        :url "http://localhost:1234"}))))
           "we got content before timeout"))))
+
+(deftest client-shutdown
+  (is (client/shutdown! (client/client *client-opts*))))

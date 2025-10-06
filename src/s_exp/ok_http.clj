@@ -72,8 +72,8 @@
   * Ring response map: {:status int, :headers map, :body value}
 
   Example:
-    (request {:method :get :url "https://httpbin.org/get"})
-    (request client {:method :post :url "https://api.com" :headers {"Content-Type" "application/json"} :body "{...}"})
+    (request {:method :get :url \"https://httpbin.org/get\"})
+    (request client {:method :post :url \"https://api.com\" :headers {\"Content-Type\" \"application/json\"} :body \"{...}\"})
   "
   ([request-map]
    (request @default-client request-map))
@@ -121,4 +121,5 @@
   (-> client .connectionPool .evictAll)
   (-> client .dispatcher .executorService .shutdown)
   (when-let [cache (.cache client)]
-    (.close cache)))
+    (.close cache))
+  true)
