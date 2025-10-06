@@ -122,4 +122,4 @@
   (-> client .dispatcher .executorService .shutdown)
   (when-let [cache (.cache client)]
     (.close cache))
-  true)
+  client)
