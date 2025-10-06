@@ -6,6 +6,7 @@
     -  [`default-client`](#s-exp.ok-http/default-client)
     -  [`request`](#s-exp.ok-http/request) - Performs an HTTP request using the provided OkHttp client and a request map.
     -  [`request-options`](#s-exp.ok-http/request-options)
+    -  [`shutdown!`](#s-exp.ok-http/shutdown!) - Closes all connections and releases resources for the provided OkHttpClient instance.
 
 -----
 # <a name="s-exp.ok-http">s-exp.ok-http</a>
@@ -92,7 +93,9 @@ Performs an HTTP request using the provided OkHttp client and a request map.
   * Ring response map: {:status int, :headers map, :body value}
 
   Example:
-    (request {:method :get :url 
+    (request {:method :get :url "https://httpbin.org/get"})
+    (request client {:method :post :url "https://api.com" :headers {"Content-Type" "application/json"} :body "{...}"})
+  
 <p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L52-L85">Source</a></sub></p>
 
 ## <a name="s-exp.ok-http/request-options">`request-options`</a><a name="s-exp.ok-http/request-options"></a>
@@ -100,3 +103,17 @@ Performs an HTTP request using the provided OkHttp client and a request map.
 
 
 <p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L48-L50">Source</a></sub></p>
+
+## <a name="s-exp.ok-http/shutdown!">`shutdown!`</a><a name="s-exp.ok-http/shutdown!"></a>
+``` clojure
+
+(shutdown! client)
+```
+
+Closes all connections and releases resources for the provided OkHttpClient instance.
+   This will:
+   - Evict all connections from the internal connection pool
+   - Shutdown the underlying executor service
+   - Close the cache, if present
+   Call this when you are done with an OkHttpClient to avoid resource leaks.
+<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L113-L125">Source</a></sub></p>
