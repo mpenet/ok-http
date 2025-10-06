@@ -109,3 +109,16 @@
 (def-http-method :head)
 (def-http-method :delete)
 (def-http-method :connect)
+
+(defn shutdown!
+  "Closes all connections and releases resources for the provided OkHttpClient instance.
+   This will:
+   - Evict all connections from the internal connection pool
+   - Shutdown the underlying executor service
+   - Close the cache, if present
+   Call this when you are done with an OkHttpClient to avoid resource leaks."
+  [^OkHttpClient client]
+  (-> client .connectionPool .evictAll)
+  (-> client .dispatcher .executorService .shutdown)
+  (when-let [cache (.cache client)]
+    (.close cache)))
