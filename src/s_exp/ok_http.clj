@@ -41,7 +41,9 @@
    (let [^OkHttpClient$Builder b
          (-> (OkHttpClient$Builder/new)
              (options/set-options! (into client-options opts)))]
-     (.build b))))
+     (.build b)))
+  ([]
+   (client {})))
 
 (defonce default-client (delay (client {})))
 
