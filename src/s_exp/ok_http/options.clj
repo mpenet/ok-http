@@ -93,7 +93,7 @@
 
 (defmethod set-option! :protocols
   [^OkHttpClient$Builder b _ v]
-  (.protocols b (map Protocol/get v)))
+  (.protocols b (map #(Protocol/get %) v)))
 
 (defmethod set-option! :authenticator
   [^OkHttpClient$Builder b _ ^Authenticator v]
