@@ -31,6 +31,7 @@
   * `:ssl-socket-factory`
   * `:follow-ssl-redirects`
   * `:add-network-interceptors`
+  * `:brotli` : boolean
   * `:add-interceptors`"
   ([^OkHttpClient client opts]
    (let [b ^OkHttpClient$Builder (.newBuilder client)]
