@@ -8,7 +8,8 @@
                     EventListener
                     EventListener$Factory
                     Authenticator
-                    Protocol)))
+                    Protocol)
+           (okhttp3.brotli BrotliInterceptor)))
 
 (defmulti set-option! (fn [^OkHttpClient$Builder _b k _v] k))
 
@@ -118,6 +119,12 @@
 (defmethod set-option! :call-timeout
   [^OkHttpClient$Builder b _ v]
   (.callTimeout b (Duration/ofMillis v)))
+
+(defmethod set-option! :brotli
+  [^OkHttpClient$Builder b _ enabled]
+  (cond-> b
+    enabled
+    (.addInterceptor BrotliInterceptor/INSTANCE b)))
 
 (defmethod set-option! :default
   [^OkHttpClient$Builder b _k _v]
