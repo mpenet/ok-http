@@ -1,4 +1,5 @@
 (ns s-exp.ok-http.options
+  (:require [less.awful.ssl :as ssl])
   (:import (java.time Duration)
            (java.util.concurrent TimeUnit)
            (javax.net.ssl HostnameVerifier)
@@ -29,6 +30,16 @@
 (defmethod set-option! :ssl-socket-factory
   [^OkHttpClient$Builder b _ [ssl-socket-factory trust-manager]]
   (.sslSocketFactory b ssl-socket-factory trust-manager))
+
+(defmethod set-option! :ssl
+  [^OkHttpClient$Builder b _ {:as _ssl-config
+                              :keys [key cert ca]}]
+  (let [sf (.getSocketFactory
+            (if ca
+              (ssl/ssl-context key cert ca)
+              (ssl/ssl-context key cert)))
+        tm (ssl/trust-manager (ssl/trust-store cert))]
+    (.sslSocketFactory b sf tm)))
 
 (defmethod set-option! :add-interceptors
   [^OkHttpClient$Builder b _ interceptors]

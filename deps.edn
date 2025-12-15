@@ -3,6 +3,7 @@
   com.squareup.okhttp3/okhttp-jvm {:mvn/version "5.2.1"}
   com.squareup.okhttp3/okhttp-brotli {:mvn/version "5.2.1"}
   exoscale/ex {:mvn/version "0.4.1"}
+  less-awful-ssl/less-awful-ssl {:mvn/version "1.0.7"}
   exoscale/ex-http {:mvn/version "0.4.1"}}
 
  :aliases
