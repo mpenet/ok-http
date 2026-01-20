@@ -31,7 +31,7 @@
   [^OkHttpClient$Builder b _ [ssl-socket-factory trust-manager]]
   (.sslSocketFactory b ssl-socket-factory trust-manager))
 
-(defmethod set-option! :ssl
+(defmethod set-option! :tls
   [^OkHttpClient$Builder b _ {:as _ssl-config
                               :keys [key cert ca]}]
   (let [sf (.getSocketFactory
