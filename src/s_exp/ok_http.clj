@@ -29,6 +29,7 @@
   * `:retry-on-connection-failure`
   * `:follow-redirects`
   * `:ssl-socket-factory`
+  * `:tls` - map of :ca :cert :key
   * `:follow-ssl-redirects`
   * `:add-network-interceptors`
   * `:brotli` : boolean

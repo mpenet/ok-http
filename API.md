@@ -40,11 +40,12 @@ Creates new [[[`client`](#s-exp.ok-http/client)](#s-exp.ok-http/client)](#s-exp.
   * `:retry-on-connection-failure`
   * `:follow-redirects`
   * `:ssl-socket-factory`
+  * `:tls` - map of :ca :cert :key
   * `:follow-ssl-redirects`
   * `:add-network-interceptors`
   * `:brotli` : boolean
   * `:add-interceptors`
-<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L15-L47">Source</a></sub></p>
+<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L15-L48">Source</a></sub></p>
 
 ## <a name="s-exp.ok-http/client-options">`client-options`</a><a name="s-exp.ok-http/client-options"></a>
 
@@ -58,13 +59,13 @@ Creates new [[[`client`](#s-exp.ok-http/client)](#s-exp.ok-http/client)](#s-exp.
 (def-http-method method)
 ```
 Function.
-<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L90-L104">Source</a></sub></p>
+<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L91-L105">Source</a></sub></p>
 
 ## <a name="s-exp.ok-http/default-client">`default-client`</a><a name="s-exp.ok-http/default-client"></a>
 
 
 
-<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L49-L49">Source</a></sub></p>
+<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L50-L50">Source</a></sub></p>
 
 ## <a name="s-exp.ok-http/request">`request`</a><a name="s-exp.ok-http/request"></a>
 ``` clojure
@@ -98,13 +99,13 @@ Performs an HTTP request using the provided OkHttp client and a request map.
     (request {:method :get :url "https://httpbin.org/get"})
     (request client {:method :post :url "https://api.com" :headers {"Content-Type" "application/json"} :body "{...}"})
   
-<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L55-L88">Source</a></sub></p>
+<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L56-L89">Source</a></sub></p>
 
 ## <a name="s-exp.ok-http/request-options">`request-options`</a><a name="s-exp.ok-http/request-options"></a>
 
 
 
-<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L51-L53">Source</a></sub></p>
+<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L52-L54">Source</a></sub></p>
 
 ## <a name="s-exp.ok-http/shutdown!">`shutdown!`</a><a name="s-exp.ok-http/shutdown!"></a>
 ``` clojure
@@ -118,4 +119,4 @@ Closes all connections and releases resources for the provided OkHttpClient inst
    - Shutdown the underlying executor service
    - Close the cache, if present
    Call this when you are done with an OkHttpClient to avoid resource leaks.
-<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L116-L128">Source</a></sub></p>
+<p><sub><a href="https://github.com/mpenet/ok-http/blob/main/src/s_exp/ok_http.clj#L117-L129">Source</a></sub></p>
