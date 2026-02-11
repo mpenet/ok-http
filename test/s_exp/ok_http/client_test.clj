@@ -1,7 +1,5 @@
 (ns s-exp.ok-http.client-test
   (:require [clojure.test :refer [deftest is use-fixtures]]
-            [exoscale.ex :as ex]
-            exoscale.ex.test
             [s-exp.ok-http :as client]
             [s-exp.ok-http.mocks :as mocks])
   (:import
@@ -38,13 +36,13 @@
 
   (is (= 200 (:status (request {:method :get :url "http://google.com" :body "test"}))))
 
-  (is (thrown-ex-info-type? :exoscale.ex/not-found
-                            (request {:method :get :url "http://google.com/404"}))
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Not Found"
+                        (request {:method :get :url "http://google.com/404"}))
       "errors are mapped correctly for GET")
 
-  (is (thrown-ex-info-type? :exoscale.ex/unsupported
-                            (request {:method :post :url "http://google.com"
-                                      :body ""}))
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Method Not Allowed"
+                        (request {:method :post :url "http://google.com"
+                                  :body ""}))
       "errors are mapped correctly for POST")
 
   (is (= 405 (:status (request {:method :post :url "http://google.com"
@@ -161,13 +159,15 @@
 (deftest test-error-handling
   (mocks/with-server 1234 (constantly {:status 400
                                        :body "Invalid"})
-    (ex/try+
+    (try
       (request {:method :get
                 :url "http://localhost:1234"
                 :response-body-decoder :string})
-      (catch :exoscale.ex/incorrect {{:keys [status body]} :response}
-        (is (= status 400))
-        (is (= body "Invalid"))))))
+      (catch Exception e
+        (let [{:keys [response]} (ex-data e)
+              {:keys [status body]} response]
+          (is (= status 400))
+          (is (= body "Invalid")))))))
 
 (deftest test-response-body-read-timeout
   (binding [*client-opts* {:read-timeout 2}]

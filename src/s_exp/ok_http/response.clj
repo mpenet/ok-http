@@ -1,10 +1,40 @@
 (ns s-exp.ok-http.response
-  (:require [exoscale.ex.http :as ex-http]
-            [s-exp.ok-http.headers :as h])
+  (:require [s-exp.ok-http.headers :as h])
   (:import (java.io ByteArrayInputStream)
            (okhttp3 Response)))
 
 (set! *warn-on-reflection* true)
+
+(defmulti response->ex-info!
+  "Throws the matching exception for status HTTP response.
+  Clients are expected to have already handled success status codes."
+  :status)
+
+(defn- ex!
+  [type message data]
+  (throw (ex-info message
+                  (assoc data
+                         :type type
+                         :response data))))
+
+(defmacro def-response->ex [status type message]
+  `(defmethod response->ex-info! ~status
+     [response#]
+     (ex! ~type ~message response#)))
+
+(def-response->ex :default :s-exp.ok-http.response/fault "HTTP Response")
+(def-response->ex 400 :s-exp.ok-http.response/incorrect "Bad Request")
+(def-response->ex 401 :s-exp.ok-http.response/forbidden "Unauthorized")
+(def-response->ex 403 :s-exp.ok-http.response/forbidden "Forbidden")
+(def-response->ex 404 :s-exp.ok-http.response/not-found "Not Found")
+(def-response->ex 405 :s-exp.ok-http.response/unsupported "Method Not Allowed")
+(def-response->ex 409 :s-exp.ok-http.response/conflict "Conflict")
+(def-response->ex 429 :s-exp.ok-http.response/busy "Too Many Requests")
+(def-response->ex 500 :s-exp.ok-http.response/fault "Internal Server Response")
+(def-response->ex 501 :s-exp.ok-http.response/unsupported "Not Implemented")
+(def-response->ex 503 :s-exp.ok-http.response/busy "Service Unavailable")
+(def-response->ex 502 :s-exp.ok-http.response/unavailable "Bad Gateway")
+(def-response->ex 504 :s-exp.ok-http.response/unavailable "Gateway Timeout")
 
 (defn body
   [^Response response {:as _opts :keys [response-body-decoder]}]
@@ -29,5 +59,5 @@
          :body (body response opts)}]
     (if (and throw-on-error
              (not (contains? ok-status status)))
-      (ex-http/response->ex-info! response)
+      (response->ex-info! response)
       response)))
