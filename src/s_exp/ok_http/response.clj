@@ -1,5 +1,6 @@
 (ns s-exp.ok-http.response
-  (:require [s-exp.ok-http.headers :as h])
+  (:require [exoscale.ex :as ex]
+            [s-exp.ok-http.headers :as h])
   (:import (java.io ByteArrayInputStream)
            (okhttp3 Response)))
 
@@ -18,9 +19,11 @@
                          :response data))))
 
 (defmacro def-response->ex [status type message]
-  `(defmethod response->ex-info! ~status
-     [response#]
-     (ex! ~type ~message response#)))
+  `(do
+     (ex/derive ~type ~(keyword "exoscale.ex" (name type)))
+     (defmethod response->ex-info! ~status
+       [response#]
+       (ex! ~type ~message response#))))
 
 (def-response->ex :default :s-exp.ok-http.response/fault "HTTP Response")
 (def-response->ex 400 :s-exp.ok-http.response/incorrect "Bad Request")
