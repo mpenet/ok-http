@@ -1,8 +1,11 @@
 (ns s-exp.ok-http.options
   (:require [less.awful.ssl :as ssl])
-  (:import (java.time Duration)
+  (:import (java.security KeyStore)
+           (java.time Duration)
            (java.util.concurrent TimeUnit)
-           (javax.net.ssl HostnameVerifier)
+           (javax.net.ssl HostnameVerifier
+                          TrustManagerFactory
+                          X509TrustManager)
            (okhttp3 OkHttpClient$Builder
                     Dispatcher
                     ConnectionPool
@@ -31,6 +34,13 @@
   [^OkHttpClient$Builder b _ [ssl-socket-factory trust-manager]]
   (.sslSocketFactory b ssl-socket-factory trust-manager))
 
+(defn- default-trust-manager []
+  (let [tmf (TrustManagerFactory/getInstance (TrustManagerFactory/getDefaultAlgorithm))
+        ^KeyStore ks nil
+        _ (.init tmf ks)]
+    (some (fn [tm] (when (instance? X509TrustManager tm) tm))
+          (.getTrustManagers tmf))))
+
 (defmethod set-option! :tls
   [^OkHttpClient$Builder b _ {:as _ssl-config
                               :keys [key cert ca]}]
@@ -38,7 +48,9 @@
             (if ca
               (ssl/ssl-context key cert ca)
               (ssl/ssl-context key cert)))
-        tm (ssl/trust-manager (ssl/trust-store cert))]
+        tm (if ca
+             (ssl/trust-manager (ssl/trust-store ca))
+             (default-trust-manager))]
     (.sslSocketFactory b sf tm)))
 
 (defmethod set-option! :add-interceptors
