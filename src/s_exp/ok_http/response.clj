@@ -12,11 +12,10 @@
   :status)
 
 (defn- ex!
-  [type message data]
+  [type message response]
   (throw (ex-info message
-                  (assoc data
-                         :type type
-                         :response data))))
+                  {:type type
+                   :response response})))
 
 (defmacro def-response->ex [status type message]
   `(do
@@ -33,7 +32,7 @@
 (def-response->ex 405 :s-exp.ok-http.response/unsupported "Method Not Allowed")
 (def-response->ex 409 :s-exp.ok-http.response/conflict "Conflict")
 (def-response->ex 429 :s-exp.ok-http.response/busy "Too Many Requests")
-(def-response->ex 500 :s-exp.ok-http.response/fault "Internal Server Response")
+(def-response->ex 500 :s-exp.ok-http.response/fault "Internal Server Error")
 (def-response->ex 501 :s-exp.ok-http.response/unsupported "Not Implemented")
 (def-response->ex 503 :s-exp.ok-http.response/busy "Service Unavailable")
 (def-response->ex 502 :s-exp.ok-http.response/unavailable "Bad Gateway")
@@ -54,13 +53,18 @@
   #{200 201 202 203 204 205 206 207 300 301 302 303 304 307 308})
 
 (defn build
-  [^Response response {:as opts :keys [throw-on-error]}]
+  [^Response response {:as opts :keys [throw-on-error response-body-decoder]}]
   (let [status (.code response)
-        response
-        {:status status
-         :headers (h/response->map response)
-         :body (body response opts)}]
-    (if (and throw-on-error
-             (not (contains? ok-status status)))
+        error? (and throw-on-error
+                    (not (contains? ok-status status)))
+        ;; on error path swap :byte-stream for :input-stream so the caller
+        ;; doesn't inherit an unclosed body inside ex-data
+        opts (cond-> opts
+               (and error? (= :byte-stream response-body-decoder))
+               (assoc :response-body-decoder :input-stream))
+        response {:status status
+                  :headers (h/response->map response)
+                  :body (body response opts)}]
+    (if error?
       (response->ex-info! response)
       response)))
