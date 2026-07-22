@@ -16,16 +16,16 @@
 
 (defmethod set-option! :connection-pool
   [^OkHttpClient$Builder b _ connection-pool]
-  (.setConnectionPool b (cond
-                          (instance? ConnectionPool connection-pool)
-                          connection-pool
-                          (map? connection-pool)
-                          (let [{:keys [max-idle-connections
-                                        keepalive-duration]}
-                                connection-pool]
-                            (ConnectionPool. (int max-idle-connections)
-                                             keepalive-duration
-                                             TimeUnit/MILLISECONDS)))))
+  (.connectionPool b (cond
+                       (instance? ConnectionPool connection-pool)
+                       connection-pool
+                       (map? connection-pool)
+                       (let [{:keys [max-idle-connections
+                                     keepalive-duration]}
+                             connection-pool]
+                         (ConnectionPool. (int max-idle-connections)
+                                          (long keepalive-duration)
+                                          TimeUnit/MILLISECONDS)))))
 
 (defmethod set-option! :ssl-socket-factory
   [^OkHttpClient$Builder b _ [ssl-socket-factory trust-manager]]
@@ -83,7 +83,7 @@
 
 (defmethod set-option! :hostname-verifier
   [^OkHttpClient$Builder b _ ^HostnameVerifier v]
-  (.hostNameVerifier b v))
+  (.hostnameVerifier b v))
 
 (defmethod set-option! :dispatcher
   [^OkHttpClient$Builder b _ dispatcher]
@@ -135,7 +135,7 @@
   [^OkHttpClient$Builder b _ enabled]
   (cond-> b
     enabled
-    (.addInterceptor BrotliInterceptor/INSTANCE b)))
+    (.addInterceptor BrotliInterceptor/INSTANCE)))
 
 (defmethod set-option! :default
   [^OkHttpClient$Builder b _k _v]
