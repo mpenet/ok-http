@@ -2,13 +2,13 @@
   (:require [clojure.string :as str]
             [s-exp.ok-http.headers :as h]
             [s-exp.ok-http.util :as u])
-  (:import (java.io File InputStream)
+  (:import (java.io File FileInputStream InputStream)
            (okhttp3 Request$Builder
                     HttpUrl
                     Request
                     RequestBody
                     MediaType)
-           (okio ByteString Okio)))
+           (okio BufferedSink Okio)))
 
 (set! *warn-on-reflection* true)
 
@@ -16,6 +16,16 @@
   (to-body [body opts]))
 
 (def default-media-type (MediaType/parse "application/octet-stream"))
+
+(defn- stream-body
+  ^RequestBody [^InputStream body ^MediaType media-type]
+  (proxy [RequestBody] []
+    (contentType [] media-type)
+    (contentLength [] -1)
+    (isOneShot [] true)
+    (writeTo [sink]
+      (with-open [src (Okio/source body)]
+        (.writeAll ^BufferedSink sink src)))))
 
 (extend-protocol ToBody
   byte/1
@@ -26,11 +36,14 @@
   (to-body [^RequestBody b ^MediaType _media-type]
     b)
 
-  java.io.InputStream
+  FileInputStream
+  (to-body [^FileInputStream body ^MediaType media-type]
+    (RequestBody/create (.getFD body) media-type))
+
+  InputStream
   (to-body [^InputStream body ^MediaType media-type]
-    (RequestBody/create media-type
-                        ^ByteString (-> (Okio/buffer (Okio/source body))
-                                        .readByteString)))
+    (stream-body body media-type))
+
   String
   (to-body [^String body ^MediaType media-type]
     (RequestBody/create media-type ^String body))
@@ -63,7 +76,7 @@
   [method body]
   (case method
     (:post :put :patch :proppatch :report)
-    (or body (RequestBody/create (byte-array 0) nil))
+    (or body RequestBody/EMPTY)
     (:head :get) nil
     body))
 
